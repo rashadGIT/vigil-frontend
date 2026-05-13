@@ -93,7 +93,7 @@ function AuthCallbackInner() {
           name: `${given} ${family}`.trim() || (idPayload.email as string),
           role: (idPayload['custom:role'] as string) ?? 'staff',
           tenantId: idPayload['custom:tenantId'] as string,
-        }, tokens.access_token);
+        });
 
         // Store tokens so Amplify's other APIs keep working
         const sub = idPayload.sub as string;

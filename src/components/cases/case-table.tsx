@@ -53,12 +53,12 @@ const baseColumns = [
     header: () => <span className="font-medium">Status</span>,
     cell: (info) => <CaseStatusBadge status={info.getValue()} />,
   }),
-  columnHelper.accessor((row) => (row as any).assignedTo, {
+  columnHelper.accessor((row) => (row as ICase & { assignedTo?: { name?: string } | string }).assignedTo, {
     id: 'assignedTo',
     header: () => <span className="font-medium">Assigned</span>,
     cell: (info) => {
       const val = info.getValue();
-      const display = val?.name ?? val ?? '—';
+      const display = typeof val === 'object' ? (val?.name ?? '—') : (val ?? '—');
       return <span className="text-muted-foreground text-sm">{display}</span>;
     },
   }),
