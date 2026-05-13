@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { signInWithRedirect, signOut } from 'aws-amplify/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -43,15 +42,53 @@ export default function LoginPage() {
   async function handleGoogleSignIn() {
     setGoogleLoading(true);
     setError(null);
-    // Clear any stale Amplify OAuth/session state so a fresh sign-in can proceed
+
     const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ?? '';
+    const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN ?? '';
     const prefix = `CognitoIdentityServiceProvider.${clientId}`;
+
+    // Clear stale Amplify OAuth state
     localStorage.removeItem(`${prefix}.inflightOAuth`);
     localStorage.removeItem(`${prefix}.oauthState`);
     localStorage.removeItem(`${prefix}.oauthPKCE`);
+
     try {
-      await signOut({ global: false }).catch(() => {/* ignore if no session */});
-      await signInWithRedirect({ provider: 'Google' });
+      // Generate PKCE code verifier + challenge
+      const array = new Uint8Array(64);
+      crypto.getRandomValues(array);
+      const codeVerifier = btoa(String.fromCharCode(...array))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+      const encoder = new TextEncoder();
+      const digest = await crypto.subtle.digest('SHA-256', encoder.encode(codeVerifier));
+      const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+      // Generate state
+      const stateArray = new Uint8Array(16);
+      crypto.getRandomValues(stateArray);
+      const state = btoa(String.fromCharCode(...stateArray))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+      // Store PKCE verifier where the callback page expects it
+      localStorage.setItem(`${prefix}.oauthPKCE`, codeVerifier);
+      localStorage.setItem(`${prefix}.oauthState`, state);
+
+      // Use current origin so we never get an origin-mismatch from Amplify
+      const redirectUri = `${window.location.origin}/auth/callback`;
+
+      const params = new URLSearchParams({
+        client_id: clientId,
+        response_type: 'code',
+        scope: 'email profile openid',
+        redirect_uri: redirectUri,
+        identity_provider: 'Google',
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256',
+        state,
+      });
+
+      window.location.href = `https://${cognitoDomain}/oauth2/authorize?${params}`;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error('Google sign-in error:', msg);
