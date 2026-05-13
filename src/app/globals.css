@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background:         38 30% 98%;
+    --foreground:         220 18% 14%;
+    --card:               38 25% 99%;
+    --card-foreground:    220 18% 14%;
+    --popover:            38 25% 99%;
+    --popover-foreground: 220 18% 14%;
+    --primary:            220 25% 18%;
+    --primary-foreground: 38 30% 98%;
+    --secondary:          35 20% 93%;
+    --secondary-foreground: 220 18% 14%;
+    --muted:              35 15% 92%;
+    --muted-foreground:   220 10% 45%;
+    --accent:             35 22% 88%;
+    --accent-foreground:  220 25% 18%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border:             35 20% 86%;
+    --input:              35 20% 86%;
+    --ring:               35 40% 45%;
+    --radius: 0.5rem;
+
+    --success:    142 60% 28%;
+    --success-bg: 142 50% 95%;
+    --warning:    32  75% 32%;
+    --warning-bg: 35  90% 95%;
+    --info:       215 65% 35%;
+    --info-bg:    215 60% 95%;
+  }
+}
+
+@layer base {
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2 { font-family: var(--font-serif); font-weight: 300; letter-spacing: -0.02em; }
+}
+
+@layer utilities {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
