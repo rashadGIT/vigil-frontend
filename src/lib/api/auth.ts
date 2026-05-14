@@ -36,6 +36,9 @@ function clearStaleOAuthState() {
 export async function login(credentials: LoginCredentials): Promise<UserProfile> {
   if (!DEV_BYPASS) {
     clearStaleOAuthState();
+    // Clear any existing Amplify session before signing in to avoid
+    // "There is already a signed in user" error from stale OAuth state.
+    await signOut({ global: false }).catch(() => null);
     // Amplify handles Cognito USER_PASSWORD_AUTH
     await signIn({ username: credentials.email, password: credentials.password });
     // Exchange Cognito tokens for backend session cookie
