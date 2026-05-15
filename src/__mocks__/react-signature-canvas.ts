@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 
 const SignatureCanvas = React.forwardRef((_props: unknown, _ref: unknown) => {

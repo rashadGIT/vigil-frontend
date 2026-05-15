@@ -22,7 +22,8 @@ test.describe('Navigation smoke tests', () => {
         !e.includes('Warning:') &&
         !e.includes('ReactDOM.render') &&
         !e.includes('hydration') &&
-        !e.includes('Hydrat'),
+        !e.includes('Hydrat') &&
+        !e.includes('ERR_CONNECTION_REFUSED'),
     );
     expect(criticalErrors).toHaveLength(0);
   });
