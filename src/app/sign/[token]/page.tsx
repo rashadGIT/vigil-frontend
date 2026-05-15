@@ -133,7 +133,7 @@ export default function SignPage({ params }: SignPageProps) {
 
             {/* Legal notice */}
             <p className="text-xs text-muted-foreground">
-              By clicking "Sign Document", you agree that your electronic signature is legally binding under the Electronic Signatures in Global and National Commerce Act (ESIGN) and Uniform Electronic Transactions Act (UETA).
+              By clicking &quot;Sign Document&quot;, you agree that your electronic signature is legally binding under the Electronic Signatures in Global and National Commerce Act (ESIGN) and Uniform Electronic Transactions Act (UETA).
             </p>
 
             <Button

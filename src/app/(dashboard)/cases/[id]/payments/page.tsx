@@ -60,7 +60,7 @@ function PaymentList({ caseId }: { caseId: string }) {
 
   if (isLoading) return <Skeleton className="h-48 w-full" />;
 
-  const payment = data as any;
+  const payment = data as Record<string, unknown> | null;
   const totalAmount = Number(payment?.totalAmount ?? 0);
   const amountPaid = Number(payment?.amountPaid ?? 0);
   const outstanding = Number(payment?.outstanding ?? totalAmount - amountPaid);

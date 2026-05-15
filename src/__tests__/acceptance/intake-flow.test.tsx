@@ -19,6 +19,7 @@ jest.mock('sonner', () => ({
   toast: { success: jest.fn(), error: jest.fn() },
 }));
 
+import { toast } from 'sonner';
 import { publicApiClient } from '@/lib/api/public-client';
 
 const mockPost = publicApiClient.post as jest.Mock;
@@ -26,7 +27,7 @@ const mockPost = publicApiClient.post as jest.Mock;
 describe('Acceptance: Intake submission flow', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockPost.mockResolvedValue({ data: { caseId: 'case-abc-123' } });
+    mockPost.mockResolvedValue({ data: { caseId: 'case-abc-123', familyAccessToken: 'tok-abc-123' } });
   });
 
   it('completes full 3-step intake form and shows success state', async () => {
@@ -71,25 +72,37 @@ describe('Acceptance: Intake submission flow', () => {
       expect(screen.getByText(/service preferences/i)).toBeInTheDocument();
     });
 
+    // Continue to step 4 (Confirmation)
+    await user.click(screen.getByRole('button', { name: /continue/i }));
+
+    // --- Step 4: Confirmation ---
+    await waitFor(() => {
+      expect(screen.getByText(/confirmation/i)).toBeInTheDocument();
+    });
+
+    // Check the required financial acknowledgment checkbox
+    await user.click(screen.getByRole('checkbox'));
+
     // Submit the form
-    await user.click(screen.getByRole('button', { name: /submit/i }));
+    await user.click(screen.getByRole('button', { name: /submit information/i }));
 
     // --- Verify success state ---
     await waitFor(() => {
       expect(screen.getByText(/thank you/i)).toBeInTheDocument();
     });
 
-    // Verify API was called with correct endpoint
+    // Verify API was called with correct endpoint and payload shape
     expect(mockPost).toHaveBeenCalledWith(
       '/intake/sunrise',
       expect.objectContaining({
-        deceasedFirstName: 'Alice',
-        deceasedLastName: 'Smith',
+        deceasedName: 'Alice Smith',
         serviceType: 'burial',
-        contactFirstName: 'Jane',
-        contactLastName: 'Smith',
-        contactEmail: 'jane@example.com',
-        contactRelationship: 'Spouse',
+        primaryContact: expect.objectContaining({
+          name: 'Jane Smith',
+          email: 'jane@example.com',
+          relationship: 'Spouse',
+        }),
+        financialResponsibilityAcknowledgment: true,
       })
     );
   });
@@ -98,7 +111,6 @@ describe('Acceptance: Intake submission flow', () => {
     const user = userEvent.setup();
     mockPost.mockRejectedValue(new Error('Network error'));
 
-    const { toast } = require('sonner');
     render(<IntakeForm tenantSlug="sunrise" />);
 
     // Complete steps 1 and 2 quickly
@@ -117,7 +129,11 @@ describe('Acceptance: Intake submission flow', () => {
     await user.click(screen.getByRole('button', { name: /continue/i }));
 
     await waitFor(() => screen.getByText(/service preferences/i));
-    await user.click(screen.getByRole('button', { name: /submit/i }));
+    await user.click(screen.getByRole('button', { name: /continue/i }));
+
+    await waitFor(() => screen.getByText(/confirmation/i));
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: /submit information/i }));
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(

@@ -8,6 +8,9 @@ const config: Config = {
   testEnvironment: 'jest-environment-jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
+    '^next/navigation$': '<rootDir>/src/__mocks__/next/navigation.ts',
+    '^next/link$': '<rootDir>/src/__mocks__/next/link.tsx',
+    '^next/image$': '<rootDir>/src/__mocks__/next/image.tsx',
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@vigil/shared-types$': '<rootDir>/../packages/shared-types/src/index.ts',
   },

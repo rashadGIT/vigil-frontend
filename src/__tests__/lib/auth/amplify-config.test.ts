@@ -100,10 +100,12 @@ describe('configureAmplify', () => {
       redirectSignIn: [
         'http://localhost:3000/auth/callback',
         'https://app.vigilhq.com/auth/callback',
+        'https://master.d2hwhswdtj7kj2.amplifyapp.com/auth/callback',
       ],
       redirectSignOut: [
         'http://localhost:3000/login',
         'https://app.vigilhq.com/login',
+        'https://master.d2hwhswdtj7kj2.amplifyapp.com/login',
       ],
       responseType: 'code',
     });
@@ -131,10 +133,12 @@ describe('configureAmplify', () => {
               redirectSignIn: [
                 'http://localhost:3000/auth/callback',
                 'https://app.vigilhq.com/auth/callback',
+                'https://master.d2hwhswdtj7kj2.amplifyapp.com/auth/callback',
               ],
               redirectSignOut: [
                 'http://localhost:3000/login',
                 'https://app.vigilhq.com/login',
+                'https://master.d2hwhswdtj7kj2.amplifyapp.com/login',
               ],
               responseType: 'code',
             },

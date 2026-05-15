@@ -10,12 +10,12 @@ const FILTER_LABELS: Record<string, string> = {
   'pending-signatures': 'Pending Signatures',
 };
 
-export default function CasesPage({
+export default async function CasesPage({
   searchParams,
 }: {
-  searchParams: { filter?: string };
+  searchParams: Promise<{ filter?: string }>;
 }) {
-  const filter = searchParams?.filter;
+  const { filter } = await searchParams;
   const title = filter ? FILTER_LABELS[filter] ?? 'Cases' : 'Cases';
   const description = filter ? undefined : 'All active and recent cases.';
 

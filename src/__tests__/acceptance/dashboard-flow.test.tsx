@@ -24,6 +24,7 @@ jest.mock('sonner', () => ({
   toast: { success: jest.fn(), error: jest.fn() },
 }));
 
+import { useRouter } from 'next/navigation';
 import { getDashboardStats, getRecentCases } from '@/lib/api/dashboard';
 import DashboardPage from '@/app/(dashboard)/page';
 
@@ -114,9 +115,8 @@ describe('Acceptance: Dashboard page', () => {
   });
 
   it('navigates to /cases/:id when a case row is clicked', async () => {
-    const { useRouter } = require('next/navigation');
     const mockPush = jest.fn();
-    useRouter.mockReturnValue({ push: mockPush });
+    jest.mocked(useRouter).mockReturnValue({ push: mockPush });
 
     const user = userEvent.setup();
     renderWithQuery(<DashboardPage />);

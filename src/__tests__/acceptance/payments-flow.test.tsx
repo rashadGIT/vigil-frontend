@@ -62,7 +62,7 @@ function PaymentList({ caseId }: { caseId: string }) {
     mutationFn: () => recordPayment(caseId, { amount: parseFloat(amount), method }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments', caseId] });
-      (toast as any).success('Payment recorded.');
+      (toast as jest.Mocked<typeof toast>).success('Payment recorded.');
       setOpen(false);
       setAmount('');
       setMethod('');
@@ -71,7 +71,7 @@ function PaymentList({ caseId }: { caseId: string }) {
 
   if (isLoading) return <Skeleton className="h-48 w-full" />;
 
-  const payment = data as any;
+  const payment = data as Record<string, unknown>;
   const totalAmount = Number(payment?.totalAmount ?? 0);
   const amountPaid = Number(payment?.amountPaid ?? 0);
   const outstanding = Number(payment?.outstanding ?? totalAmount - amountPaid);

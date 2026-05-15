@@ -22,6 +22,7 @@ jest.mock('sonner', () => ({
   toast: { success: jest.fn(), error: jest.fn() },
 }));
 
+import { useRouter } from 'next/navigation';
 import { getRecentCases } from '@/lib/api/dashboard';
 
 const mockGetRecentCases = getRecentCases as jest.Mock;
@@ -114,9 +115,8 @@ describe('RecentCasesTable', () => {
   });
 
   it('navigates to case detail on row click', async () => {
-    const { useRouter } = require('next/navigation');
     const mockPush = jest.fn();
-    useRouter.mockReturnValue({ push: mockPush });
+    jest.mocked(useRouter).mockReturnValue({ push: mockPush });
 
     mockGetRecentCases.mockResolvedValue(mockCases);
     const user = userEvent.setup();

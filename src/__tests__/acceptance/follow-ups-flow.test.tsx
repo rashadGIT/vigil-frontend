@@ -41,7 +41,7 @@ function FollowUpList({ caseId }: { caseId: string }) {
 
   return (
     <div className="rounded-md border divide-y">
-      {followUps.map((f: any) => {
+      {followUps.map((f: Record<string, unknown>) => {
         const label: Record<string, string> = {
           one_week: '1 Week',
           one_month: '1 Month',

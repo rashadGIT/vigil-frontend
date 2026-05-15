@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/auth.store';
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ?? '';
@@ -33,7 +33,6 @@ function parseJwt(token: string): Record<string, unknown> {
 }
 
 function AuthCallbackInner() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const setUser = useAuthStore((s) => s.setUser);
   const [error, setError] = useState<string | null>(null);
@@ -93,7 +92,7 @@ function AuthCallbackInner() {
           name: `${given} ${family}`.trim() || (idPayload.email as string),
           role: (idPayload['custom:role'] as string) ?? 'staff',
           tenantId: idPayload['custom:tenantId'] as string,
-        }, tokens.access_token);
+        });
 
         // Store tokens so Amplify's other APIs keep working
         const sub = idPayload.sub as string;
@@ -103,15 +102,19 @@ function AuthCallbackInner() {
         localStorage.setItem(`${prefix}.refreshToken`, tokens.refresh_token);
         localStorage.setItem(`CognitoIdentityServiceProvider.${CLIENT_ID}.LastAuthUser`, sub);
 
-        // Set access_token cookie so the Next.js middleware auth guard passes
-        document.cookie = `access_token=${tokens.access_token}; path=/; max-age=${tokens.expires_in}; SameSite=Lax`;
+        // Set cookie server-side so Next.js middleware sees it via Set-Cookie header
+        await fetch('/api/auth/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accessToken: tokens.access_token, expiresIn: tokens.expires_in }),
+        });
 
         // Clean up PKCE state
         localStorage.removeItem(PKCE_KEY);
         localStorage.removeItem(`CognitoIdentityServiceProvider.${CLIENT_ID}.oauthState`);
         localStorage.removeItem(`CognitoIdentityServiceProvider.${CLIENT_ID}.inflightOAuth`);
 
-        router.replace('/');
+        window.location.href = '/';
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         console.error('[callback] exchange error:', msg);
@@ -120,7 +123,7 @@ function AuthCallbackInner() {
     }
 
     exchangeCode();
-  }, [router, searchParams, setUser]);
+  }, [searchParams, setUser]);
 
   if (error) {
     return (

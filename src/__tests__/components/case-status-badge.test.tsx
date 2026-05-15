@@ -27,27 +27,27 @@ describe('CaseStatusBadge', () => {
     expect(screen.getByText('Archived')).toBeInTheDocument();
   });
 
-  it('applies blue classes for new status', () => {
+  it('applies info theme classes for new status', () => {
     const { container } = render(<CaseStatusBadge status={CaseStatus.new} />);
     const badge = container.firstChild as HTMLElement;
-    expect(badge.className).toMatch(/blue/);
+    expect(badge.className).toMatch(/info/);
   });
 
-  it('applies amber classes for in_progress status', () => {
+  it('applies warning theme classes for in_progress status', () => {
     const { container } = render(<CaseStatusBadge status={CaseStatus.in_progress} />);
     const badge = container.firstChild as HTMLElement;
-    expect(badge.className).toMatch(/amber/);
+    expect(badge.className).toMatch(/warning/);
   });
 
-  it('applies green classes for completed status', () => {
+  it('applies success theme classes for completed status', () => {
     const { container } = render(<CaseStatusBadge status={CaseStatus.completed} />);
     const badge = container.firstChild as HTMLElement;
-    expect(badge.className).toMatch(/green/);
+    expect(badge.className).toMatch(/success/);
   });
 
-  it('applies gray classes for archived status', () => {
+  it('applies muted classes for archived status', () => {
     const { container } = render(<CaseStatusBadge status={CaseStatus.archived} />);
     const badge = container.firstChild as HTMLElement;
-    expect(badge.className).toMatch(/gray/);
+    expect(badge.className).toMatch(/muted/);
   });
 });
