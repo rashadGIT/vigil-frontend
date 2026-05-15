@@ -228,13 +228,13 @@ export function IntakeForm({ tenantSlug }: IntakeFormProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <Label className="font-medium">First Name <span className="text-destructive">*</span></Label>
-              <Input {...step1Form.register('deceasedFirstName')} className="w-full text-base h-12" />
+              <Label htmlFor="deceased-first-name" className="font-medium">First Name <span className="text-destructive">*</span></Label>
+              <Input id="deceased-first-name" {...step1Form.register('deceasedFirstName')} className="w-full text-base h-12" />
               <FieldError message={step1Form.formState.errors.deceasedFirstName?.message} />
             </div>
             <div className="space-y-1">
-              <Label className="font-medium">Last Name <span className="text-destructive">*</span></Label>
-              <Input {...step1Form.register('deceasedLastName')} className="w-full text-base h-12" />
+              <Label htmlFor="deceased-last-name" className="font-medium">Last Name <span className="text-destructive">*</span></Label>
+              <Input id="deceased-last-name" {...step1Form.register('deceasedLastName')} className="w-full text-base h-12" />
               <FieldError message={step1Form.formState.errors.deceasedLastName?.message} />
             </div>
           </div>

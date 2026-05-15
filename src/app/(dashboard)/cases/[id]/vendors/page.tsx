@@ -58,7 +58,7 @@ function VendorList({ caseId }: { caseId: string }) {
                 <Select value={selectedVendor} onValueChange={setSelectedVendor}>
                   <SelectTrigger><SelectValue placeholder="Select vendor" /></SelectTrigger>
                   <SelectContent>
-                    {vendors.map((v: any) => (
+                    {vendors.map((v: Record<string, string>) => (
                       <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
                     ))}
                   </SelectContent>
@@ -76,7 +76,7 @@ function VendorList({ caseId }: { caseId: string }) {
         <p className="text-sm text-muted-foreground">No vendors assigned yet.</p>
       ) : (
         <div className="rounded-md border divide-y">
-          {assignments.map((a: any) => (
+          {assignments.map((a: Record<string, unknown> & { vendor?: { name?: string } }) => (
             <div key={a.id} className="px-4 py-3">
               <p className="text-sm font-medium">{a.vendor?.name || 'Unknown Vendor'}</p>
               <p className="text-xs text-muted-foreground">Assigned {formatDate(a.createdAt)}</p>

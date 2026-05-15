@@ -18,6 +18,7 @@ jest.mock('@/lib/utils/format-date', () => ({
   isOverdue: jest.fn(() => false),
 }));
 
+import { useRouter } from 'next/navigation';
 import { getCases } from '@/lib/api/cases';
 
 const mockGetCases = getCases as jest.Mock;
@@ -119,9 +120,8 @@ describe('CaseTable', () => {
   });
 
   it('navigates to case detail on row click', async () => {
-    const { useRouter } = require('next/navigation');
     const mockPush = jest.fn();
-    useRouter.mockReturnValue({ push: mockPush });
+    jest.mocked(useRouter).mockReturnValue({ push: mockPush });
 
     mockGetCases.mockResolvedValue(mockCases);
     const user = userEvent.setup();

@@ -48,9 +48,10 @@ async function fetchPortalData(accessToken: string): Promise<PortalData | null> 
 export default async function FamilyPortalPage({
   params,
 }: {
-  params: { accessToken: string };
+  params: Promise<{ accessToken: string }>;
 }) {
-  const data = await fetchPortalData(params.accessToken);
+  const { accessToken } = await params;
+  const data = await fetchPortalData(accessToken);
 
   if (!data || !data.case) {
     notFound();
@@ -58,7 +59,7 @@ export default async function FamilyPortalPage({
 
   // Mark as viewed (fire-and-forget — don't block render)
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-  void fetch(`${apiUrl}/family-portal/${params.accessToken}/viewed`, { method: 'PATCH' });
+  void fetch(`${apiUrl}/family-portal/${accessToken}/viewed`, { method: 'PATCH' });
 
-  return <FamilyPortalView data={data} accessToken={params.accessToken} />;
+  return <FamilyPortalView data={data} accessToken={accessToken} />;
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -79,9 +80,9 @@ export function RecentCasesTable() {
         </TableBody>
       </Table>
       <div className="px-4 py-2 border-t">
-        <a href="/cases" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Link href="/cases" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
           View all cases →
-        </a>
+        </Link>
       </div>
     </div>
   );

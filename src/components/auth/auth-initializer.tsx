@@ -6,7 +6,6 @@ import { getMe } from '@/lib/api/auth';
 
 export function AuthInitializer() {
   const setUser = useAuthStore((s) => s.setUser);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   useEffect(() => {
     // useAuthStore uses skipHydration — manually rehydrate from persisted storage first

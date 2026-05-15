@@ -16,6 +16,18 @@ export interface UserProfile {
 
 const DEV_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === 'true';
 
+// Amplify throws "redirect is coming from a different origin" when it finds
+// stale inflightOAuth state from a previous (possibly cross-origin) Google attempt.
+// Clear it before any Amplify auth call so both flows start clean.
+function clearStaleOAuthState() {
+  if (typeof window === 'undefined') return;
+  const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ?? '';
+  const prefix = `CognitoIdentityServiceProvider.${clientId}`;
+  localStorage.removeItem(`${prefix}.inflightOAuth`);
+  localStorage.removeItem(`${prefix}.oauthState`);
+  localStorage.removeItem(`${prefix}.oauthPKCE`);
+}
+
 // Login flow:
 // 1. Authenticate (Cognito in prod, no-op in dev)
 // 2. Backend sets access_token as httpOnly cookie on its /auth/login endpoint
@@ -23,6 +35,10 @@ const DEV_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === 'true';
 // The token itself never touches the browser JS context in production.
 export async function login(credentials: LoginCredentials): Promise<UserProfile> {
   if (!DEV_BYPASS) {
+    clearStaleOAuthState();
+    // Clear any existing Amplify session before signing in to avoid
+    // "There is already a signed in user" error from stale OAuth state.
+    await signOut({ global: false }).catch(() => null);
     // Amplify handles Cognito USER_PASSWORD_AUTH
     await signIn({ username: credentials.email, password: credentials.password });
     // Exchange Cognito tokens for backend session cookie

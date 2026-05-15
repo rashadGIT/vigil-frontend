@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const DASHBOARD_PATHS = ['/', '/cases', '/calendar', '/vendors', '/price-list', '/settings'];
 const SUPER_ADMIN_PATHS = ['/super-admin'];
 const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN ?? 'kelovaapp.com';
 const DEV_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === 'true';
@@ -25,19 +24,12 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   if (tenantSlug) requestHeaders.set('x-tenant-slug', tenantSlug);
 
-  // Dashboard auth guard
-  const isDashboardRoute = DASHBOARD_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));
-  if (isDashboardRoute) {
-    const accessToken = request.cookies.get('access_token')?.value;
-
-    // DEV bypass: allow through without a real token
-    if (!accessToken && !DEV_BYPASS) {
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
-    // If bypass active but visiting /login, redirect to dashboard
-    if (DEV_BYPASS && pathname === '/login') {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
+  // Dashboard auth guard: only redirect in DEV_BYPASS mode for /login.
+  // Real auth enforcement happens via AuthInitializer + the backend returning 401.
+  // The cookie check was removed because the session cookie is set async after OAuth
+  // and wasn't reliably present before the middleware ran, causing a login redirect loop.
+  if (DEV_BYPASS && pathname === '/login') {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   // Super-admin route guard — redirect non-super-admins to dashboard

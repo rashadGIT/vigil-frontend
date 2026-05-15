@@ -4,7 +4,12 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { usePathname } from 'next/navigation';
 import { Sidebar, MobileSidebarTrigger } from '@/components/layout/sidebar';
+
+jest.mock('@/hooks/use-current-user', () => ({
+  useCurrentUser: jest.fn(() => ({ canAccessSettings: true })),
+}));
 
 // next/navigation mock is loaded from src/__mocks__/next/navigation.ts via moduleNameMapper
 // next/link mock is loaded from src/__mocks__/next/link.tsx
@@ -49,8 +54,7 @@ describe('Sidebar', () => {
   });
 
   it('marks Dashboard link as active when pathname is "/"', () => {
-    const { usePathname } = require('next/navigation');
-    usePathname.mockReturnValue('/');
+    jest.mocked(usePathname).mockReturnValue('/');
     render(<Sidebar />);
 
     const dashboardLink = screen.getByRole('link', { name: /dashboard/i });
@@ -59,8 +63,7 @@ describe('Sidebar', () => {
   });
 
   it('marks Cases link as active when pathname starts with "/cases"', () => {
-    const { usePathname } = require('next/navigation');
-    usePathname.mockReturnValue('/cases');
+    jest.mocked(usePathname).mockReturnValue('/cases');
     render(<Sidebar />);
 
     const casesLink = screen.getByRole('link', { name: /^cases$/i });
@@ -68,8 +71,7 @@ describe('Sidebar', () => {
   });
 
   it('does not mark Dashboard as active when pathname is "/cases"', () => {
-    const { usePathname } = require('next/navigation');
-    usePathname.mockReturnValue('/cases');
+    jest.mocked(usePathname).mockReturnValue('/cases');
     render(<Sidebar />);
 
     const dashboardLink = screen.getByRole('link', { name: /dashboard/i });

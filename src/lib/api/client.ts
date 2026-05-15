@@ -14,14 +14,30 @@ export const apiClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Request interceptor: inject dev bypass headers only in non-production
+// Read Cognito access token from localStorage (set by OAuth callback or Amplify SDK).
+// Returns null in SSR context or when not authenticated.
+function getCognitoAccessToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ?? '';
+  const sub = localStorage.getItem(`CognitoIdentityServiceProvider.${clientId}.LastAuthUser`);
+  if (!sub) return null;
+  return localStorage.getItem(`CognitoIdentityServiceProvider.${clientId}.${sub}.accessToken`);
+}
+
+// Request interceptor: inject auth headers
 apiClient.interceptors.request.use((config) => {
   if (BYPASS_ACTIVE) {
     config.headers['x-dev-user'] = `dev-admin|${DEV_TENANT_ID}|funeral_director|director@sunrise.demo`;
     config.headers['Authorization'] = 'Bearer dev-bypass-token';
+    return config;
   }
-  // In production the httpOnly cookie is sent automatically via withCredentials.
-  // No token reading from localStorage or the Zustand store.
+  // Cookies are domain-scoped — the access_token cookie set by the OAuth callback
+  // lives on the frontend domain and is never sent to api.vigil.automagicly.ai.
+  // Instead, read the Cognito access token from localStorage and send as Bearer.
+  const token = getCognitoAccessToken();
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
   return config;
 });
 
