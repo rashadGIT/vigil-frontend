@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -74,7 +74,7 @@ function CemeteryForm({ caseId }: { caseId: string }) {
     handleSubmit,
     control,
     watch,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { isSubmitting },
     reset,
   } = useForm<CemeteryFormValues>({
     resolver: zodResolver(cemeterySchema),

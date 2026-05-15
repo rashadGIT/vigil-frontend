@@ -81,8 +81,8 @@ function NewEventDialog({ onCreated, defaultDate }: NewEventDialogProps) {
       onCreated(created.startTime as string);
       setOpen(false);
     },
-    onError: (err: any) => {
-      const msg = err?.response?.data?.message;
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
       toast.error(Array.isArray(msg) ? msg[0] : (msg ?? 'Failed to create event.'));
     },
   });

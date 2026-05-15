@@ -29,17 +29,17 @@ function FollowUpList({ caseId }: { caseId: string }) {
 
   return (
     <div className="rounded-md border divide-y">
-      {followUps.map((f: any) => {
-        const scheduledDate = f.scheduledAt ?? f.scheduledFor ?? null;
+      {followUps.map((f: Record<string, unknown>) => {
+        const scheduledDate = (f.scheduledAt ?? f.scheduledFor ?? null) as string | null;
         return (
-          <div key={f.id} className="flex items-center justify-between px-4 py-3">
+          <div key={f.id as string} className="flex items-center justify-between px-4 py-3">
             <div>
-              <p className="text-sm font-medium">{label[f.templateType ?? f.template] ?? f.templateType ?? f.template}</p>
+              <p className="text-sm font-medium">{label[String(f.templateType ?? f.template)] ?? String(f.templateType ?? f.template ?? '')}</p>
               <p className="text-xs text-muted-foreground">
                 {scheduledDate ? `Scheduled for ${formatDate(scheduledDate)}` : 'Date TBD'}
               </p>
             </div>
-            <StatusPill kind={getStatusKind(f.status, scheduledDate)} />
+            <StatusPill kind={getStatusKind(String(f.status ?? ''), scheduledDate)} />
           </div>
         );
       })}

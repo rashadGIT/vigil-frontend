@@ -21,6 +21,7 @@ jest.mock('sonner', () => ({
   toast: { success: jest.fn(), error: jest.fn() },
 }));
 
+import { isOverdue } from '@/lib/utils/format-date';
 import { updateTask } from '@/lib/api/tasks';
 
 const mockUpdateTask = updateTask as jest.Mock;
@@ -94,8 +95,7 @@ describe('TaskItem', () => {
   });
 
   it('shows overdue text when task is overdue', () => {
-    const { isOverdue } = require('@/lib/utils/format-date');
-    (isOverdue as jest.Mock).mockReturnValue(true);
+    jest.mocked(isOverdue).mockReturnValue(true);
 
     renderWithQuery(
       <TaskItem task={{ ...baseTask, dueDate: '2024-01-01' }} caseId="case-1" />
