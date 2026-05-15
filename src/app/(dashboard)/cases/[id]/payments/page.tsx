@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getCasePayments, recordPayment } from '@/lib/api/payments';
+import type { IPayment } from '@/types';
 import { formatDate } from '@/lib/utils/format-date';
 
 const paymentSchema = z.object({
@@ -60,10 +61,10 @@ function PaymentList({ caseId }: { caseId: string }) {
 
   if (isLoading) return <Skeleton className="h-48 w-full" />;
 
-  const payment = data as Record<string, unknown> | null;
+  const payment = data as IPayment | null;
   const totalAmount = Number(payment?.totalAmount ?? 0);
   const amountPaid = Number(payment?.amountPaid ?? 0);
-  const outstanding = Number(payment?.outstanding ?? totalAmount - amountPaid);
+  const outstanding = totalAmount - amountPaid;
   const isPaidInFull = outstanding <= 0 && totalAmount > 0;
 
   return (

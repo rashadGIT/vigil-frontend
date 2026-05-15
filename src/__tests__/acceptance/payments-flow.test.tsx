@@ -71,10 +71,10 @@ function PaymentList({ caseId }: { caseId: string }) {
 
   if (isLoading) return <Skeleton className="h-48 w-full" />;
 
-  const payment = data as Record<string, unknown>;
+  const payment = data as import('@/types').IPayment | null;
   const totalAmount = Number(payment?.totalAmount ?? 0);
   const amountPaid = Number(payment?.amountPaid ?? 0);
-  const outstanding = Number(payment?.outstanding ?? totalAmount - amountPaid);
+  const outstanding = totalAmount - amountPaid;
   const isPaidInFull = outstanding <= 0 && totalAmount > 0;
 
   return (

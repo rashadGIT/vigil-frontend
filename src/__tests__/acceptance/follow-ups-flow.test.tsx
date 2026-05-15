@@ -41,7 +41,7 @@ function FollowUpList({ caseId }: { caseId: string }) {
 
   return (
     <div className="rounded-md border divide-y">
-      {followUps.map((f: Record<string, unknown>) => {
+      {(followUps as Array<{ id: string; templateType?: string; template?: string; status: string; scheduledAt?: string | null; scheduledFor?: string | null }>).map((f) => {
         const label: Record<string, string> = {
           one_week: '1 Week',
           one_month: '1 Month',
@@ -53,7 +53,7 @@ function FollowUpList({ caseId }: { caseId: string }) {
           <div key={f.id} className="flex items-center justify-between px-4 py-3">
             <div>
               <p className="text-sm font-medium">
-                {label[f.templateType ?? f.template] ?? f.templateType ?? f.template}
+                {label[f.templateType ?? f.template ?? ''] ?? f.templateType ?? f.template}
               </p>
               <p className="text-xs text-muted-foreground">
                 {scheduledDate ? `Scheduled for ${formatDate(scheduledDate)}` : 'Date TBD'}

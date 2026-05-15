@@ -121,7 +121,7 @@ describe('CaseTable', () => {
 
   it('navigates to case detail on row click', async () => {
     const mockPush = jest.fn();
-    jest.mocked(useRouter).mockReturnValue({ push: mockPush });
+    jest.mocked(useRouter).mockReturnValue({ push: mockPush } as unknown as ReturnType<typeof useRouter>);
 
     mockGetCases.mockResolvedValue(mockCases);
     const user = userEvent.setup();

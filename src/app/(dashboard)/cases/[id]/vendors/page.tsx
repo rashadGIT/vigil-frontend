@@ -13,6 +13,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { apiClient } from '@/lib/api/client';
 import { formatDate } from '@/lib/utils/format-date';
 
+interface IVendorAssignment {
+  id: string;
+  createdAt: string;
+  vendor?: { name?: string };
+}
+
 function VendorList({ caseId }: { caseId: string }) {
   const queryClient = useQueryClient();
   const { data: assignments = [], isLoading } = useQuery({
@@ -76,7 +82,7 @@ function VendorList({ caseId }: { caseId: string }) {
         <p className="text-sm text-muted-foreground">No vendors assigned yet.</p>
       ) : (
         <div className="rounded-md border divide-y">
-          {assignments.map((a: Record<string, unknown> & { vendor?: { name?: string } }) => (
+          {assignments.map((a: IVendorAssignment) => (
             <div key={a.id} className="px-4 py-3">
               <p className="text-sm font-medium">{a.vendor?.name || 'Unknown Vendor'}</p>
               <p className="text-xs text-muted-foreground">Assigned {formatDate(a.createdAt)}</p>

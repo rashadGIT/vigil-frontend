@@ -116,7 +116,7 @@ describe('Acceptance: Dashboard page', () => {
 
   it('navigates to /cases/:id when a case row is clicked', async () => {
     const mockPush = jest.fn();
-    jest.mocked(useRouter).mockReturnValue({ push: mockPush });
+    jest.mocked(useRouter).mockReturnValue({ push: mockPush } as unknown as ReturnType<typeof useRouter>);
 
     const user = userEvent.setup();
     renderWithQuery(<DashboardPage />);
