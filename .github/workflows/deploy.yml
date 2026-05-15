@@ -18,6 +18,21 @@ jobs:
           role-to-assume: ${{ secrets.AWS_CDK_ROLE_ARN }}
           aws-region: us-east-2
 
+      - name: Cancel any running Amplify jobs
+        run: |
+          RUNNING=$(aws amplify list-jobs \
+            --app-id dlrm9a0dpsu77 \
+            --branch-name main \
+            --query 'jobSummaries[?status==`RUNNING` || status==`PENDING`].jobId' \
+            --output text)
+          for JID in $RUNNING; do
+            echo "Stopping Amplify job: $JID"
+            aws amplify stop-job \
+              --app-id dlrm9a0dpsu77 \
+              --branch-name main \
+              --job-id $JID
+          done
+
       - name: Start Amplify job
         run: |
           JOB_ID=$(aws amplify start-job \
